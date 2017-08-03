@@ -42,5 +42,17 @@
                 <script src="{{REACT_URL}}/build/theme_{{theme_name}}_web.js"></script>
             {% endif %}
         {% endblock %}
+        <link href="https://api.motion.ai/sdk/webchat.css" rel="stylesheet" type="text/css">
+        <script src="https://api.motion.ai/sdk/webchat.js"></script>
+        <script>
+        motionAI_Init(
+            "74376?color=00B0F0&sendBtn=SEND&inputBox=Type%20something...&module=1002983&token=ac43c34caa1712e461c4aeca022f1b09",
+            true,
+            400,
+            470,
+            "http://zupimages.net/up/17/31/075q.png"
+        );
+        /* You may also invoke motionAI_Open() to manually open the modal. */
+        </script>
     </body>
 {% endblock%}
