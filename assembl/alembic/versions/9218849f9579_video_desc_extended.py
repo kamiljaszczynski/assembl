@@ -18,12 +18,8 @@ from assembl.lib.sqla import mark_changed
 
 from assembl.lib import config
 
-# Do stuff with the app's models here.
-from assembl import models
-db = models.get_session_maker()()
 
-
-def put_new_langstring(thematic, attr):
+def put_new_langstring(db, thematic, attr):
     langstring = getattr(thematic, attr)
     new_langstring = models.LangString()
     old_entries = langstring.entries
@@ -33,6 +29,9 @@ def put_new_langstring(thematic, attr):
 
 
 def upgrade(pyramid_env):
+    # Do stuff with the app's models here.
+    from assembl import models as m
+    db = m.get_session_maker()()
     with context.begin_transaction():
 
         op.add_column('thematic', sa.Column('video_description_side_id',
@@ -44,7 +43,7 @@ def upgrade(pyramid_env):
                                    in db.query(models.Thematic).all()
                                    if x.video_description_top is not None]
 
-        new_langstrings = map(lambda x: put_new_langstring(x,
+        new_langstrings = map(lambda x: put_new_langstring(db, x,
                               'video_description_top'),
                               current_top_langstrings)
         for new_langstring in new_langstrings:
