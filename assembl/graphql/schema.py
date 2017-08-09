@@ -980,7 +980,7 @@ class UpdateThematic(graphene.Mutation):
 
         permissions = get_permissions(user_id, discussion_id)
         allowed = thematic.user_can(user_id, CrudPermissions.UPDATE, permissions)
-        if not allowed or (allowed == IF_OWNED and user_id == Everyone):
+        if not allowed:
             raise HTTPUnauthorized()
 
         with cls.default_db.no_autoflush:
@@ -1112,8 +1112,8 @@ class DeleteThematic(graphene.Mutation):
         thematic = models.Thematic.get(thematic_id)
 
         permissions = get_permissions(user_id, discussion_id)
-        allowed = models.Thematic.user_can_cls(user_id, CrudPermissions.DELETE, permissions)
-        if not allowed or (allowed == IF_OWNED and user_id == Everyone):
+        allowed = thematic.user_can(user_id, CrudPermissions.DELETE, permissions)
+        if not allowed:
             raise HTTPUnauthorized()
 
         thematic.is_tombstone = True
@@ -1155,7 +1155,7 @@ class CreatePost(graphene.Mutation):
 
         permissions = get_permissions(user_id, discussion_id)
         allowed = cls.user_can_cls(user_id, CrudPermissions.CREATE, permissions)
-        if not allowed or (allowed == IF_OWNED and user_id == Everyone):
+        if not allowed:
             raise HTTPUnauthorized()
 
         with cls.default_db.no_autoflush:
@@ -1231,7 +1231,7 @@ class AddSentiment(graphene.Mutation):
 
         permissions = get_permissions(user_id, discussion_id)
         allowed = SentimentOfPost.user_can_cls(user_id, CrudPermissions.CREATE, permissions)
-        if not allowed or (allowed == IF_OWNED and user_id == Everyone):
+        if not allowed:
             raise HTTPUnauthorized()
 
         sentiment_type = args.get('type')
@@ -1271,8 +1271,8 @@ class DeleteSentiment(graphene.Mutation):
         post = models.Post.get(post_id)
 
         permissions = get_permissions(user_id, discussion_id)
-        allowed = SentimentOfPost.user_can_cls(user_id, CrudPermissions.DELETE, permissions)
-        if not allowed or (allowed == IF_OWNED and user_id == Everyone):
+        allowed = post.my_sentiment.user_can(user_id, CrudPermissions.DELETE, permissions)
+        if not allowed:
             raise HTTPUnauthorized()
 
         post.my_sentiment.tombstone_date = datetime.utcnow()
